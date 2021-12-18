@@ -5,6 +5,10 @@ import numpy as np
 import scipy.special
 
 
+"""
+Compute the area of a closed Bezier curve specified by
+its control points.
+"""
 def bezier_area(P):
     R = np.array([[0, 1],
                   [-1, 0]])
@@ -22,6 +26,11 @@ def bezier_area(P):
     return A
 
 
+"""
+Compute the approximate area of a Bezier curve by sampling
+it in multiple points, and running a shoelace algorithm on
+the resulting polygon.
+"""
 def approx_bezier_area(P, num_samples):
     def shoelace(x, y):
         return 0.5*np.abs(np.dot(x, np.roll(y, 1))-np.dot(y, np.roll(x, 1)))
