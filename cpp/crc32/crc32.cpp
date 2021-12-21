@@ -14,10 +14,11 @@
     https://www.mathworks.com/matlabcentral/fileexchange/49518-crc-32-computation-algorithm
 */
 constexpr uint32_t polynomial = 0xEDB88320;
+constexpr uint32_t init_xor = 0xFFFFFFFF;
 
 uint32_t crc32(const std::string &data)
 {
-    uint32_t crc = 0xFFFFFFFF;
+    uint32_t crc = init_xor;
     for (char cc : data)
     {
         crc ^= uint32_t(cc);
@@ -47,7 +48,7 @@ inline char toggle_case(char input)
 struct Column
 {
     uint32_t diff;
-    uint32_t transfer;
+    uint64_t transfer;
 };
 
 /*
@@ -73,7 +74,7 @@ void compute_diffs(const std::string &init_str, std::vector<Column> &columns)
         // Record diff for this transformation
         columns[ii].diff = init_crc ^ crc32(tmp);
         // The transfer matrix is the identity in this basis
-        columns[ii].transfer = 1 << ii;
+        columns[ii].transfer = 1ul << ii;
     }
 }
 
@@ -87,7 +88,7 @@ void compute_diffs(const std::string &init_str, std::vector<Column> &columns)
 */
 void diagonalize(std::vector<Column> &columns)
 {
-    // Use a GF(2)-Gauss-Seidel elimination to diagonalize the diffs and
+    // Use a GF(2)-Gauss-Jordan elimination to diagonalize the diffs and
     // apply the same operations to the transfer matrix
 
     for (size_t cur_column = 0; cur_column < columns.size(); ++cur_column)
@@ -109,7 +110,7 @@ void diagonalize(std::vector<Column> &columns)
 }
 
 /*
-    After diagonalization, we get a diagonal transfer matrix (up to rows reordering),
+    After diagonalization, we get a diagonal transfer matrix (up to columns reordering),
     and a transfer matrix that enables change of basis from singular case
     transformation basis to singular bit flip basis.
 */
@@ -171,11 +172,11 @@ void show(std::vector<Column> &columns)
         std::cout << std::bitset<32>(column.transfer) << std::endl;
 }
 
-void apply_unitary_transformation(const std::string &init_str, std::vector<Column> &columns, size_t bit_index)
+void apply_elementary_transformation(const std::string &init_str, std::vector<Column> &columns, size_t bit_index)
 {
     std::string ctl_str(init_str);
     for (size_t ii = 0; ii < 32; ++ii)
-        if (columns[bit_index].transfer & (1 << (31 - ii)))
+        if (columns[bit_index].transfer & (1 << ii))
             ctl_str[ii] = toggle_case(ctl_str[ii]);
 
     uint32_t init_crc = crc32(init_str);
@@ -190,7 +191,7 @@ std::string random_string()
 {
     constexpr std::string_view alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
     std::string ret = "";
-    std::uniform_int_distribution<size_t> len_dis(32, 64);
+    std::uniform_int_distribution<size_t> len_dis(32, 128);
     std::uniform_int_distribution<size_t> idx_dis(0, 51);
     std::random_device rng;
     for (size_t ii = 0; ii < len_dis(rng); ++ii)
@@ -213,7 +214,7 @@ int main(int argc, char **argv)
     remove_collisions(columns);
     // show(columns);
 
-    // apply_unitary_transformation(init_str, columns, 2);
+    // apply_elementary_transformation(init_str, columns, 2);
 
     auto ctl_str = control_crc(init_str, columns, 0xdeadbeef);
 
