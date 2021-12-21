@@ -2,6 +2,7 @@
 #include <bitset>
 #include <cctype>
 #include <cstdint>
+#include <fstream>
 #include <iostream>
 #include <random>
 #include <string>
@@ -172,6 +173,30 @@ void show(std::vector<Column> &columns)
         std::cout << std::bitset<32>(column.transfer) << std::endl;
 }
 
+void export_matrices(std::vector<Column> &columns, const std::string &stem)
+{
+    std::ofstream diffs_file(stem + "_diff.txt");
+    std::ofstream transfer_file(stem + "_transfer.txt");
+
+    for (size_t row = 0; row < 32; ++row)
+    {
+        for (auto column : columns)
+        {
+            diffs_file << size_t(bool(column.diff & (1 << row))) << ' ';
+        }
+        diffs_file << '\n';
+    }
+
+    for (size_t row = 0; row < 64; ++row)
+    {
+        for (auto column : columns)
+        {
+            transfer_file << size_t(bool(column.transfer & (1ul << row))) << ' ';
+        }
+        transfer_file << '\n';
+    }
+}
+
 void apply_elementary_transformation(const std::string &init_str, std::vector<Column> &columns, size_t bit_index)
 {
     std::string ctl_str(init_str);
@@ -209,9 +234,14 @@ int main(int argc, char **argv)
     std::vector<Column> columns;
 
     compute_diffs(init_str, columns);
+    export_matrices(columns, "init");
+
     diagonalize(columns);
+    export_matrices(columns, "diag");
+
     reorder(columns);
     remove_collisions(columns);
+    export_matrices(columns, "clean");
     // show(columns);
 
     // apply_elementary_transformation(init_str, columns, 2);
