@@ -8,18 +8,14 @@ from shapely.geometry import Polygon
 Computes a quadratic form with all coefficients set to one, as an array.
 Then, dotting this array with a conformant coefficient array gives a value.
 """
-
-
-def qform(xx, yy):
-    return np.array([xx ** 2, xx*yy, yy ** 2, xx, yy, 1])
+def qform(xx: float, yy: float):
+    return np.array([np.power(xx, 2), xx*yy, np.power(yy, 2), xx, yy, 1.0])
 
 
 """
 Normalize arrays of X and Y coordinates as well as an array Z of
 values between 0 and 1
 """
-
-
 def normalize(X, Y, Z):
     xmin = np.min(X)
     ymin = np.min(Y)
@@ -40,8 +36,6 @@ def normalize(X, Y, Z):
 Transform a point to normalized coordinates, given the extremal values
 returned by the normalize() function
 """
-
-
 def to_normalized_coord(X, Y, xmin, xmax, ymin, ymax):
     return ((X-xmin)/xmax, (Y-ymin)/ymax)
 
@@ -49,15 +43,13 @@ def to_normalized_coord(X, Y, xmin, xmax, ymin, ymax):
 """
 Return the generalized quad interpolant that minimizes the quadratic coefficients
 """
-
-
-def quad_interpolation(XX, YY, VV):
-    # Renormalize neighbor coordinates for better stability
-    Xn, Yn, Vn, xmin, xmax, ymin, ymax, zmin, zmax = normalize(XX, YY, VV)
+def quad_interpolation(XX, YY, ZZ):
+    # Renormalize coordinates for better stability
+    Xn, Yn, Zn, xmin, xmax, ymin, ymax, zmin, zmax = normalize(XX, YY, ZZ)
 
     # Value vector, 4 values for the Lagrange multipliers,
     # 6 zeros for stationary points where the Lagrangian vanishes
-    b = np.append(Vn, np.zeros(6))
+    b = np.append(Zn, np.zeros(6))
 
     # We now form the matrix A of the linear system to be solved
     E = np.diag([1, 1, 1, 0, 0, 0])
@@ -71,13 +63,14 @@ def quad_interpolation(XX, YY, VV):
     ])
 
     # And solve the linear system for the quadratic form coefficients
-    a = np.linalg.solve(A, b)
-    # a = np.linalg.lstsq(A, b)[0]
+    # a = np.linalg.solve(A, b)
+    a = np.linalg.lstsq(A, b)[0]
 
     # np.set_printoptions(precision=3)
     # print(A)
     # print(a)
 
+    # Return the interpolant
     def interp(xx, yy):
         # Transform xx and yy to normalized coordinate space
         xn, yn = to_normalized_coord(xx, yy, xmin, xmax, ymin, ymax)
@@ -93,9 +86,9 @@ def main(argv):
     Y = np.array([1.5, 7.9, 12.154, 0.238], dtype='float')
 
     # These are the RGB color values for each point
-    r = np.array([1, 0.7, 0, 0.4], dtype='float')
-    g = np.array([0.3, 1, 0.2, 0.2], dtype='float')
-    b = np.array([0.1, 0, 0, 1], dtype='float')
+    r = np.array([1.0, 1.0, 0.8, 0.8], dtype='float')
+    g = np.array([0.0, 0.4, 0.0, 0.6], dtype='float')
+    b = np.array([0.4, 0.0, 0.0, 0.0], dtype='float')
 
     # Get an interpolant for each color channel
     r_interp = quad_interpolation(X, Y, r)
