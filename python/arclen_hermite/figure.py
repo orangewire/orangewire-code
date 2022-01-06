@@ -74,7 +74,9 @@ def figure_hermite_tension():
         [0, 0], [0.5, 5], [5.2, 5.5], [3, 2.2]
     ])
     labels = [r'$P_0$', r'$P_1$', r'$P_2$', r'$P_3$']
-    free_tangents = np.zeros([2, 2])
+    free_tangents = np.array([
+        [0, 3], [-4, 0]
+    ])
 
     fig, ax = plt.subplots(1)
     tensions = np.linspace(0, 1, 10)
@@ -187,10 +189,45 @@ def figure_ifrac():
     for ii, label in enumerate(pts_labels):
         ax.annotate(label, r_pts[ii] + np.array([0.1, -0.2]))
 
-    len_labels = [r'$l_{after}$', r'$l_{before}$', r'$s-l_{before}$', r'$l_{segment}$']
-    pos = np.array([r_la[-1,:]+np.array([-0.4,0.5]), r_lb[-1,:]+np.array([-0.4,1]), r_slb[-1,:]+np.array([0,-1]), r_seg[-1,:]+np.array([0,-0.7])])
+    len_labels = [r'$l_{after}$', r'$l_{before}$',
+                  r'$s-l_{before}$', r'$l_{segment}$']
+    pos = np.array([r_la[-1, :]+np.array([-0.4, 0.5]), r_lb[-1, :]+np.array([-0.4, 1]),
+                   r_slb[-1, :]+np.array([0, -1]), r_seg[-1, :]+np.array([0, -0.7])])
     for ii, label in enumerate(len_labels):
         ax.annotate(label, pos[ii])
+
+    ax.set_aspect('equal', adjustable='box')
+    plt.show()
+
+
+def thumbnail():
+    control_points = np.array([
+        [64, 168],
+        [80, 161],
+        [105, 175],
+        [107, 92],
+        [96, 124],
+        [145, 120],
+        [151, 176],
+        [134, 175],
+        [138, 99],
+        [162, 94]
+    ])
+
+    free_tangents = np.array([
+        [0, 3], [0, 3]
+    ])
+
+    H = HermiteSpline(control_points, 0.3, free_tangents)
+    AH = ArclenHermiteSpline(H, 200)
+
+    fig, ax = plt.subplots(1)
+    xp = np.linspace(0, 1, 100)
+    xp_arclen = np.linspace(0, 1, 15)
+    rp = H.sample(xp)
+    rp_arclen = AH.sample(xp_arclen)
+    ax.plot(rp[:, 0], rp[:, 1], color='orange', linewidth=4)
+    ax.scatter(rp_arclen[:, 0], rp_arclen[:, 1], color='orange', s=100)
 
     ax.set_aspect('equal', adjustable='box')
     plt.show()
@@ -199,9 +236,10 @@ def figure_ifrac():
 def main(argv):
     # figure_bezier_spline()
     # figure_hermite_spline()
-    figure_hermite_tension()
+    # figure_hermite_tension()
     # figure_ifrac()
     # figure_arclen()
+    thumbnail()
 
 
 if __name__ == '__main__':
