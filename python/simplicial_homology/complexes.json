@@ -1,0 +1,10 @@
+{
+    "C1": {
+        "description": "Two triangles sharing an edge, one of them being hollow, the other filled",
+        "complex": ["A", "B", "C", "D", "AB", "AC", "BC", "BD", "CD", "BCD"]
+    },
+    "C5": {
+        "description": "A hollow tetrahedron sharing an edge with a hollow triangle",
+        "complex": ["A", "B", "C", "D", "E", "CE", "DE", "AB", "AC", "AD", "BC", "BD", "CD", "BCD", "ABC", "ABD", "ACD"]
+    }
+}
