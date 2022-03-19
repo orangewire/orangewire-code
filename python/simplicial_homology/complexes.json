@@ -3,8 +3,20 @@
         "description": "Two triangles sharing an edge, one of them being hollow, the other filled",
         "complex": ["A", "B", "C", "D", "AB", "AC", "BC", "BD", "CD", "BCD"]
     },
+    "C2": {
+        "description": "Two hollow triangles sharing an edge",
+        "complex": ["A", "B", "C", "D", "AB", "AC", "BC", "BD", "CD"]
+    },
+    "C3": {
+        "description": "A Möbius strip",
+        "complex": ["A","B","C","D","E","AB","AC","AD","AE","BC","BD","BE","CD","CE","ABC","ACD","ACE","BCD","BCE"]
+    },
     "C5": {
         "description": "A hollow tetrahedron sharing an edge with a hollow triangle",
         "complex": ["A", "B", "C", "D", "E", "CE", "DE", "AB", "AC", "AD", "BC", "BD", "CD", "BCD", "ABC", "ABD", "ACD"]
+    },
+    "T2": {
+        "description": "A triangulated 2-torus",
+        "complex": ["A","B","C","D","E","F","G","AB","AC","AD","AE","AF","AG","BC","BD","BE","BF","BG","CD","CE","CF","CG","DE","DF","DG","EF","EG","FG","ABD","ABF","ACD","ACG","AEF","AEG","BCE","BCG","BDE","BFG","CDF","CEF","DEG","DFG"]
     }
 }
