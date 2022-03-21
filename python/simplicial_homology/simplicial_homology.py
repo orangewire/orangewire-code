@@ -82,11 +82,7 @@ def homology(boundary_ops, tol=1e-5):
 
 
 def betti(H):
-    b = []
-    for basis in H:
-        b.append(basis.shape[1])
-
-    return b
+    return [basis.shape[1] for basis in H]
 
 
 def main():
