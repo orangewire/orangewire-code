@@ -65,28 +65,24 @@ def homology(boundary_ops, tol=1e-5):
     boundary_ops.append(np.ones(shape=(mm, 0)))
 
     H = []
-    for k in range(len(boundary_ops)-1):
+    for del_k, del_kp1 in zip(boundary_ops, boundary_ops[1:]):
         # Compute a basis for the kernel of the next map
-        kermap = kernel(boundary_ops[k], tol)
+        kappa = kernel(del_k, tol)
         # The chain complex induces a map m from previous space to the kernel of next map
-        # Solve d_{k} = kermap \circ m for m
-        m, _, _, _ = np.linalg.lstsq(kermap, boundary_ops[k+1], rcond=None)
+        # Solve d_{k} = kappa \circ m for m
+        psi, _, _, _ = np.linalg.lstsq(kappa, del_kp1, rcond=None)
         # The cokernel of m is precisely those elements of the kernel of the next map
         # that are not in the image of m (or d_k for that matter), that's homology
-        c = cokernel(m, tol)
+        ksi = cokernel(psi, tol)
         # Express a basis for the homology thought of as a subspace of C_k
         # using composition of maps
-        H.append(np.dot(kermap, c))
+        H.append(np.dot(kappa, ksi))
 
     return H
 
 
 def betti(H):
-    b = []
-    for basis in H:
-        b.append(basis.shape[1])
-
-    return b
+    return [basis.shape[1] for basis in H]
 
 
 def main():
