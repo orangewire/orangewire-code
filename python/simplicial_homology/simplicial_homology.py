@@ -4,9 +4,12 @@ import numpy as np
 import json
 
 
-# From: https://github.com/kb1dds/simplicialHomology/blob/master/simplicialHomology.py
-
 def kernel(A, tol=1e-5):
+    """
+    Return a matrix whose column space is the kernel of A.
+    The tol parameter is the threshold below which a singular value is considered to be zero.
+    Taken from: https://github.com/kb1dds/simplicialHomology/blob/master/simplicialHomology.py
+    """
     _, s, vh = np.linalg.svd(A)
     singular = np.zeros(vh.shape[0], dtype=float)
     singular[:s.size] = s
@@ -15,6 +18,11 @@ def kernel(A, tol=1e-5):
 
 
 def cokernel(A, tol=1e-5):
+    """
+    Return a matrix whose column space is the cokernel of A.
+    The tol parameter is the threshold below which a singular value is considered to be zero.
+    Taken from: https://github.com/kb1dds/simplicialHomology/blob/master/simplicialHomology.py
+    """
     u, s, _ = np.linalg.svd(A)
     singular = np.zeros(u.shape[1], dtype=float)
     singular[:s.size] = s
@@ -39,6 +47,10 @@ def get_coeff(simplex, faces):
 
 
 def boundary(complex):
+    """
+    Given an abstract simplicial complex specified as a list of lists of vertices, return a
+    list of boundary operators in matrix form.
+    """
     # Get maximal simplex dimension
     maxdim = len(max(complex, key=len))
     # Group simplices by (ascending) dimension and sort them lexicographically
@@ -57,6 +69,10 @@ def boundary(complex):
 
 
 def homology(boundary_ops, tol=1e-5):
+    """
+    Given a list of boundary operators, return a list of matrices whose columns
+    span the homology spaces. 
+    """
     # Insert zero maps
     mm = boundary_ops[-1].shape[1]
     nn = boundary_ops[0].shape[0]
@@ -82,6 +98,7 @@ def homology(boundary_ops, tol=1e-5):
 
 
 def betti(H):
+    """Compute the dimensions of each homology space output by the homology() function"""
     return [basis.shape[1] for basis in H]
 
 
